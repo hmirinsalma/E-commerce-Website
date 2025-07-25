@@ -17,8 +17,7 @@ secrets.json
 .vscode/
 .idea/
 
-# Fichiers statiques collectés (si collectstatic est utilisé)
-staticfiles/
+
 
 # Fichiers médias locaux
 /media/
