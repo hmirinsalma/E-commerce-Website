@@ -13,7 +13,7 @@ CosmoLux est une application web e-commerce développée avec Django, HTML/CSS, 
 
 ## Structure du projet
 
-ANA FNAL/
+ANA /
 ├── env/
 ├── projet/
 ├── README.md
