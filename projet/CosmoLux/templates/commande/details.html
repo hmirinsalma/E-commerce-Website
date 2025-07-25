@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Détails de la commande #{{ commande.id }}</h2>
+            <p>Commande passée le {{ commande.date_commande|date:"d/m/Y à H:i" }}</p>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Informations de commande</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Statut :</strong> 
+                            <span class="badge {% if commande.statut == 'livree' %}bg-success{% elif commande.statut == 'annulee' %}bg-danger{% elif commande.statut == 'expediee' %}bg-info{% else %}bg-warning{% endif %}">
+                                {{ commande.get_statut_display }}
+                            </span>
+                        </p>
+                        <p><strong>Mode de livraison :</strong> {{ commande.get_livraison_display }}</p>
+                        <p><strong>Mode de paiement :</strong> {{ commande.get_mode_paiement_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Adresse :</strong> {{ commande.adresse }}</p>
+                        <p><strong>Téléphone :</strong> {{ commande.telephone }}</p>
+                        <p><strong>Email :</strong> {{ commande.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Produits commandés</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in produits %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if item.produit.image %}
+                                        <img src="{{ item.produit.image.url }}" alt="{{ item.produit.nom }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ item.produit.nom }}</h6>
+                                            <small class="text-muted">{{ item.produit.marque }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ item.prix_unitaire|default:item.produit.prix }} DH</td>
+                                <td>{{ item.quantite }}</td>
+                                <td>{{ item.total_ligne }} DH</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total</strong></td>
+                                <td><strong>{{ commande.total }} DH</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions mt-4">
+            <a href="{% url 'historique_commandes' %}" class="form-btn form-btn-secondary">Retour à mes commandes</a>
+            {% if commande.statut == 'en_attente' or commande.statut == 'en_cours' %}
+            <button class="form-btn form-btn-danger">Annuler la commande</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

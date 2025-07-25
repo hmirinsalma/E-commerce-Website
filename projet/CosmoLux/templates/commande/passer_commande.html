@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container checkout-form-container">
+        <div class="form-header">
+            <h2>Finaliser votre commande</h2>
+            <p>Veuillez remplir les informations de livraison et de paiement</p>
+        </div>
+        
+        {% if messages %}
+        {% for message in messages %}
+        <div class="form-alert form-alert-{% if message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}danger{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h4 class="mb-3">Informations de livraison</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_adresse">Adresse de livraison</label>
+                        <textarea name="adresse" id="id_adresse" class="form-textarea" required>{{ form.adresse.value|default:'' }}</textarea>
+                        {% if form.adresse.errors %}
+                        <span class="form-error">{{ form.adresse.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="id_telephone">Téléphone</label>
+                                <input type="tel" name="telephone" id="id_telephone" class="form-control" value="{{ form.telephone.value|default:user.telephone }}" required>
+                                {% if form.telephone.errors %}
+                                <span class="form-error">{{ form.telephone.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="id_email">Email</label>
+                                <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:user.email }}" required>
+                                {% if form.email.errors %}
+                                <span class="form-error">{{ form.email.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_livraison">Mode de livraison</label>
+                        <select name="livraison" id="id_livraison" class="form-select">
+                            <option value="standard" {% if form.livraison.value == 'standard' %}selected{% endif %}>Standard (3-5 jours)</option>
+                            <option value="express" {% if form.livraison.value == 'express' %}selected{% endif %}>Express (1-2 jours)</option>
+                        </select>
+                        {% if form.livraison.errors %}
+                        <span class="form-error">{{ form.livraison.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mode de paiement</label>
+                        <div class="payment-options">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="mode_paiement" id="paiement_livraison" value="livraison" {% if form.mode_paiement.value == 'livraison' or not form.mode_paiement.value %}checked{% endif %}>
+                                <label class="form-check-label" for="paiement_livraison">
+                                    <i class="fas fa-money-bill-wave me-2"></i> Paiement à la livraison
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode_paiement" id="paiement_en_ligne" value="en_ligne" {% if form.mode_paiement.value == 'en_ligne' %}checked{% endif %}>
+                                <label class="form-check-label" for="paiement_en_ligne">
+                                    <i class="fas fa-credit-card me-2"></i> Paiement en ligne
+                                </label>
+                            </div>
+                        </div>
+                        {% if form.mode_paiement.errors %}
+                        <span class="form-error">{{ form.mode_paiement.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Section de paiement en ligne (conditionnelle) -->
+                    <div id="online-payment-section" class="mt-3 p-3 border rounded" style="display: none;">
+                        <h5 class="mb-3">Informations de paiement</h5>
+                        <div class="form-group">
+                            <label for="card_number">Numéro de carte</label>
+                            <input type="text" id="card_number" class="form-control" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="expiry_date">Date d'expiration</label>
+                                    <input type="text" id="expiry_date" class="form-control" placeholder="MM/AA">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" class="form-control" placeholder="123">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="card_name">Nom sur la carte</label>
+                            <input type="text" id="card_name" class="form-control" placeholder="PRÉNOM NOM">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'panier' %}" class="form-btn form-btn-secondary">Retour au panier</a>
+                        <button type="submit" class="form-btn form-btn-primary">Confirmer la commande</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Récapitulatif</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for article in articles %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="my-0">{{ article.produit.nom }}</h6>
+                                    <small class="text-muted">Quantité: {{ article.quantite }}</small>
+                                </div>
+                                <span class="text-muted">{{ article.total_article }} DH</span>
+                            </li>
+                            {% endfor %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Total</span>
+                                <strong>{{ total }} DH</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script pour afficher/masquer la section de paiement en ligne
+    document.addEventListener('DOMContentLoaded', function() {
+        const paiementEnLigne = document.getElementById('paiement_en_ligne');
+        const paiementLivraison = document.getElementById('paiement_livraison');
+        const onlinePaymentSection = document.getElementById('online-payment-section');
+        
+        function togglePaymentSection() {
+            if (paiementEnLigne.checked) {
+                onlinePaymentSection.style.display = 'block';
+            } else {
+                onlinePaymentSection.style.display = 'none';
+            }
+        }
+        
+        // Vérifier l'état initial
+        togglePaymentSection();
+        
+        // Ajouter des écouteurs d'événements
+        paiementEnLigne.addEventListener('change', togglePaymentSection);
+        paiementLivraison.addEventListener('change', togglePaymentSection);
+    });
+</script>
+{% endblock %}

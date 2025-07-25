@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="products-page">
+    <!-- Hero Banner -->
+    <div class="products-hero gradient-bg">
+        <div class="container">
+            <h1 class="text-center mb-4">Nos Produits</h1>
+            <p class="text-center mb-5">Découvrez notre collection de produits cosmétiques de luxe</p>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Sidebar avec filtres -->
+            <div class="col-lg-3 mb-4">
+                <div class="filter-sidebar p-4 rounded shadow-sm">
+                    <h4 class="mb-4">Filtres</h4>
+                    
+                    <!-- Formulaire de recherche -->
+                    <form method="get" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="recherche" class="form-control" placeholder="Rechercher..." value="{{ request.GET.recherche }}">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Filtres avancés -->
+                    <form method="get">
+                        <div class="mb-3">
+                            <label for="categorie" class="form-label">Catégorie</label>
+                            <select name="categorie" id="categorie" class="form-select">
+                                <option value="">Toutes les catégories</option>
+                                {% for categorie in categories %}
+                                <option value="{{ categorie.nom }}" {% if request.GET.categorie == categorie.nom %}selected{% endif %}>{{ categorie.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="marque" class="form-label">Marque</label>
+                            <select name="marque" id="marque" class="form-select">
+                                <option value="">Toutes les marques</option>
+                                {% for marque in marques %}
+                                <option value="{{ marque.nom }}" {% if request.GET.marque == marque.nom %}selected{% endif %}>{{ marque.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Prix</label>
+                            <div class="d-flex align-items-center">
+                                <input type="number" name="prix_min" class="form-control form-control-sm me-2" placeholder="Min" value="{{ request.GET.prix_min }}">
+                                <span>-</span>
+                                <input type="number" name="prix_max" class="form-control form-control-sm ms-2" placeholder="Max" value="{{ request.GET.prix_max }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="bestseller" id="bestseller" value="true" {% if request.GET.bestseller == "true" %}checked{% endif %}>
+                                <label class="form-check-label" for="bestseller">
+                                    Meilleures ventes
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Appliquer les filtres</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Liste des produits -->
+            <div class="col-lg-9">
+                <!-- Résultats de recherche et tri -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        {% if request.GET.recherche or request.GET.categorie or request.GET.marque or request.GET.prix_min or request.GET.prix_max %}
+                            <p class="mb-0">{{ produits.paginator.count }} résultat(s) trouvé(s)</p>
+                        {% else %}
+                            <p class="mb-0">{{ produits.paginator.count }} produits</p>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <label for="sort" class="me-2">Trier par:</label>
+                        <select id="sort" class="form-select form-select-sm" onchange="window.location.href=this.value">
+                            <option value="?{% if request.GET.recherche %}recherche={{ request.GET.recherche }}&{% endif %}{% if request.GET.categorie %}categorie={{ request.GET.categorie }}&{% endif %}{% if request.GET.marque %}marque={{ request.GET.marque }}&{% endif %}sort=nouveautes" {% if request.GET.sort == 'nouveautes' or not request.GET.sort %}selected{% endif %}>Nouveautés</option>
+                            <option value="?{% if request.GET.recherche %}recherche={{ request.GET.recherche }}&{% endif %}{% if request.GET.categorie %}categorie={{ request.GET.categorie }}&{% endif %}{% if request.GET.marque %}marque={{ request.GET.marque }}&{% endif %}sort=prix_asc" {% if request.GET.sort == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
+                            <option value="?{% if request.GET.recherche %}recherche={{ request.GET.recherche }}&{% endif %}{% if request.GET.categorie %}categorie={{ request.GET.categorie }}&{% endif %}{% if request.GET.marque %}marque={{ request.GET.marque }}&{% endif %}sort=prix_desc" {% if request.GET.sort == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+                        </select>
+                    </div>
+                </div>
+
+                {% if not produits %}
+                    <div class="alert alert-info">Aucun produit ne correspond à votre recherche.</div>
+                {% else %}
+                    <!-- Affichage par catégories -->
+                    {% regroup produits by categorie as categorie_list %}
+                    
+                    {% for categorie in categorie_list %}
+                        <div class="category-section mb-5">
+                            <h2 class="category-title mb-4">{{ categorie.grouper }}</h2>
+                            <div class="row g-4">
+                                {% for produit in categorie.list %}
+                                    <div class="col-md-4">
+                                        <div class="card h-100 product-card {% if produit.stock <= 0 %}out-of-stock{% endif %}">
+                                            {% if produit.est_meilleure_vente %}
+                                                <div class="bestseller-badge">
+                                                    <span class="badge bg-danger">Best-seller</span>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if produit.stock <= 0 %}
+                                                <div class="out-of-stock-overlay">
+                                                    <span class="badge bg-secondary">Rupture de stock</span>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if produit.image %}
+                                                <img src="{{ produit.image.url }}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                                            {% else %}
+                                                <img src="{% static 'images/placeholder-product.jpg' %}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                                            {% endif %}
+                                            
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ produit.nom }}</h5>
+                                                <p class="card-text small text-muted">{{ produit.description|truncatechars:100 }}</p>
+                                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                                    <span class="price fw-bold">{{ produit.prix }} DH</span>
+                                                    {% if produit.stock > 0 %}
+                                                        <button onclick="ajouterAuPanier('{{ produit.id }}')" class="btn btn-primary">
+                                                            <i class="fas fa-shopping-cart me-1"></i> Ajouter
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-secondary" disabled>
+                                                            <i class="fas fa-ban me-1"></i> Indisponible
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card-footer bg-white border-top-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">{{ produit.marque }}</small>
+                                                    <small class="{% if produit.stock <= 0 %}text-danger{% elif produit.stock <= 5 %}text-warning{% else %}text-success{% endif %}">
+                                                        {% if produit.stock <= 0 %}
+                                                            Rupture de stock
+                                                        {% elif produit.stock <= 5 %}
+                                                            Stock: {{ produit.stock }} (Limité)
+                                                        {% else %}
+                                                            Stock: {{ produit.stock }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <!-- Pagination -->
+                    {% if produits.paginator.num_pages > 1 %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if produits.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.recherche %}&recherche={{ request.GET.recherche }}{% endif %}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}{% if request.GET.marque %}&marque={{ request.GET.marque }}{% endif %}{% if request.GET.prix_min %}&prix_min={{ request.GET.prix_min }}{% endif %}{% if request.GET.prix_max %}&prix_max={{ request.GET.prix_max }}{% endif %}" aria-label="First">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ produits.previous_page_number }}{% if request.GET.recherche %}&recherche={{ request.GET.recherche }}{% endif %}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}{% if request.GET.marque %}&marque={{ request.GET.marque }}{% endif %}{% if request.GET.prix_min %}&prix_min={{ request.GET.prix_min }}{% endif %}{% if request.GET.prix_max %}&prix_max={{ request.GET.prix_max }}{% endif %}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for i in produits.paginator.page_range %}
+                                {% if produits.number == i %}
+                                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                {% elif i > produits.number|add:'-3' and i < produits.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ i }}{% if request.GET.recherche %}&recherche={{ request.GET.recherche }}{% endif %}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}{% if request.GET.marque %}&marque={{ request.GET.marque }}{% endif %}{% if request.GET.prix_min %}&prix_min={{ request.GET.prix_min }}{% endif %}{% if request.GET.prix_max %}&prix_max={{ request.GET.prix_max }}{% endif %}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if produits.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ produits.next_page_number }}{% if request.GET.recherche %}&recherche={{ request.GET.recherche }}{% endif %}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}{% if request.GET.marque %}&marque={{ request.GET.marque }}{% endif %}{% if request.GET.prix_min %}&prix_min={{ request.GET.prix_min }}{% endif %}{% if request.GET.prix_max %}&prix_max={{ request.GET.prix_max }}{% endif %}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ produits.paginator.num_pages }}{% if request.GET.recherche %}&recherche={{ request.GET.recherche }}{% endif %}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}{% if request.GET.marque %}&marque={{ request.GET.marque }}{% endif %}{% if request.GET.prix_min %}&prix_min={{ request.GET.prix_min }}{% endif %}{% if request.GET.prix_max %}&prix_max={{ request.GET.prix_max }}{% endif %}" aria-label="Last">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/panier.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Synchroniser le panier avec le serveur au chargement de la page
+        synchroniserPanierAvecServeur();
+        updateFloatingCart();
+    });
+
+    // Fonction pour synchroniser le panier avec le serveur
+    function synchroniserPanierAvecServeur() {
+        fetch('/api/panier-info/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.articles) {
+                // Remplacer le panier local par celui du serveur
+                const panierServeur = data.articles.map(article => ({
+                    produitId: article.produit_id.toString(),
+                    quantite: article.quantite
+                }));
+                savePanierToLocalStorage(panierServeur);
+                updateCartCounter();
+                updateFloatingCart();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la synchronisation du panier:', error);
+        });
+    }
+
+    // Fonction pour ajouter un produit au panier
+    function ajouterAuPanier(produitId) {
+        console.log("Ajout du produit au panier:", produitId);
+        
+        // Appel AJAX pour ajouter au panier côté serveur
+        fetch(`/ajouter_panier/${produitId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Produit ajouté avec succès côté serveur");
+                
+                // Ajouter également au panier local (localStorage)
+                const panier = loadPanierFromLocalStorage();
+                const produit = panier.find((item) => item.produitId === produitId);
+                
+                if (produit) {
+                    produit.quantite++;
+                } else {
+                    panier.push({ produitId, quantite: 1 });
+                }
+                
+                savePanierToLocalStorage(panier);
+                
+                // Afficher une notification
+                showNotification('Produit ajouté au panier');
+                
+                // Mettre à jour l'affichage du panier flottant
+                updateCartCounter();
+                updateFloatingCart();
+            } else {
+                // Afficher un message d'erreur
+                showNotification(data.message || "Erreur lors de l'ajout au panier");
+                console.error("Erreur lors de l'ajout au panier côté serveur:", data.message || "Erreur inconnue");
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de l\'ajout au panier:', error);
+        });
+    }
+
+    // Fonction pour afficher une notification
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+</script>
+{% endblock %}

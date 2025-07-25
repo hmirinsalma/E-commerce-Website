@@ -1,0 +1,114 @@
+/* Styles pour la page d'accueil */
+
+/* Hero Section */
+.hero-section {
+    padding: 5rem 0;
+    background-color: #fff5f7;
+}
+
+.hero-section h1 {
+    color: #d23f72;
+}
+
+/* Promo Timer */
+.promo-timer {
+    background-color: #fff0f5;
+    border-top: 1px solid #ffe4e1;
+    border-bottom: 1px solid #ffe4e1;
+}
+
+/* Category Cards */
+.category-card {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.category-icon {
+    color: #d23f72;
+}
+
+/* Product Cards */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.price {
+    color: #d23f72;
+    font-size: 1.1rem;
+}
+
+.bestseller-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+/* Testimonial Cards */
+.testimonial-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.testimonial-rating {
+    font-size: 1.2rem;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background-color: #fff5f7;
+}
+
+/* Carousel Customization */
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+        text-align: center;
+    }
+    
+    .hero-section img {
+        margin-top: 2rem;
+    }
+    
+    .product-card .card-img-top {
+        height: 150px;
+    }
+}
+/* Animation au survol des cartes de marques */
+.hover-zoom {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-zoom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}

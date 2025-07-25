@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container auth-form-container">
+        <div class="form-header">
+            <h2>Connexion</h2>
+            <p>Accédez à votre compte CosmoLux</p>
+        </div>
+        
+        {% if form.errors %}
+        <div class="form-alert form-alert-danger">
+            Identifiants incorrects. Veuillez réessayer.
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username">Nom d'utilisateur</label>
+                <input type="text" name="username" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" required>
+                {% if form.username.errors %}
+                <span class="form-error">{{ form.username.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password">Mot de passe</label>
+                <input type="password" name="password" id="id_password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" required>
+                {% if form.password.errors %}
+                <span class="form-error">{{ form.password.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'password_reset' %}" class="form-link">Mot de passe oublié ?</a>
+                <button type="submit" class="form-btn form-btn-primary">Se connecter</button>
+            </div>
+        </form>
+        
+        <div class="form-footer">
+            <p>Pas encore inscrit ? <a href="{% url 'inscription' %}" class="form-link">Créer un compte</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

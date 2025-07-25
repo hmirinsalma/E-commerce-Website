@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 reveal">
+                <h1 class="display-4 fw-bold">Révélez votre beauté naturelle</h1>
+                <p class="lead">Des produits cosmétiques de luxe pour sublimer votre peau et révéler votre éclat naturel.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{% url 'produits' %}" class="btn btn-primary btn-lg px-4 me-md-2 hover-grow">Découvrir</a>
+                    <a href="#nouveautes" class="btn btn-outline-secondary btn-lg px-4 hover-grow">Nouveautés</a>
+                </div>
+            </div>
+            <div class="col-md-6 reveal" style="animation-delay: 0.3s;">
+                <img src="{% static 'images/soinvisage.jpg' %}" alt="CosmoLux Collection" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Promotion Timer -->
+<div class="promo-timer text-center py-3 gradient-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <p class="mb-0"><span class="badge bg-danger pulse">Offre spéciale</span> 20% de réduction sur tous les soins visage. Fin de l'offre dans <span id="countdown" class="fw-bold"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Catégories en vedette -->
+<section class="categories-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 reveal">Nos Catégories</h2>
+        <div class="row g-4 stagger-fade-in">
+            {% for categorie in categories %}
+            <div class="col-6 col-md-3">
+                <div class="category-card text-center">
+                    <div class="category-icon mb-3">
+                        {% if categorie.nom == "Soins Visage" %}
+                            <i class="fas fa-spa fa-3x"></i>
+                        {% elif categorie.nom == "Maquillage" %}
+                            <i class="fas fa-magic fa-3x"></i>
+                        {% elif categorie.nom == "Parfums" %}
+                            <i class="fas fa-spray-can fa-3x"></i>
+                        {% else %}
+                            <i class="fas fa-heart fa-3x"></i>
+                        {% endif %}
+                    </div>
+                    <h5>{{ categorie.nom }}</h5>
+                    <a href="{% url 'produits' %}?categorie={{ categorie.nom }}" class="stretched-link"></a>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Catégories par défaut si aucune n'est trouvée dans la base de données -->
+            <div class="col-6 col-md-3">
+                <div class="category-card text-center">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-spa fa-3x"></i>
+                    </div>
+                    <h5>Soins Visage</h5>
+                    <a href="{% url 'produits' %}?categorie=Soins%20Visage" class="stretched-link"></a>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="category-card text-center">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-magic fa-3x"></i>
+                    </div>
+                    <h5>Maquillage</h5>
+                    <a href="{% url 'produits' %}?categorie=Maquillage" class="stretched-link"></a>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="category-card text-center">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-spray-can fa-3x"></i>
+                    </div>
+                    <h5>Parfums</h5>
+                    <a href="{% url 'produits' %}?categorie=Parfums" class="stretched-link"></a>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="category-card text-center">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-heart fa-3x"></i>
+                    </div>
+                    <h5>Coffrets</h5>
+                    <a href="{% url 'produits' %}?categorie=Coffrets" class="stretched-link"></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Slider avec les images -->
+<div class="container my-5">
+    <div id="promoSlider" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#promoSlider" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#promoSlider" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#promoSlider" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner rounded shadow">
+            <!-- Slider 1 -->
+            <div class="carousel-item active">
+                <img src="{% static 'images/skincare.jpg' %}" class="d-block w-100" alt="Soin Visage">
+                <div class="carousel-caption">
+                    <h3 class="fw-bold">✨ Nouvelle collection de soins visage</h3>
+                    <p class="d-none d-md-block">20% de réduction cette semaine !</p>
+                    <a href="{% url 'produits' %}?categorie=Soins%20Visage" class="btn btn-light btn-sm">Découvrir</a>
+                </div>
+            </div>
+            <!-- Slider 2 -->
+            <div class="carousel-item">
+                <img src="{% static 'images/luxeparfum.jpg' %}" class="d-block w-100" alt="Pack Lèvres">
+                <div class="carousel-caption">
+                    <h3 class="fw-bold">💫 Parfums d'exception</h3>
+                    <p class="d-none d-md-block">Symbole de luxe et d'élégance éternelle 💎</p>
+                    <a href="{% url 'produits' %}?categorie=Parfums" class="btn btn-light btn-sm">Découvrir</a>
+                </div>
+            </div>
+            <!-- Nouveau Slider 3 pour le maquillage -->
+            <div class="carousel-item">
+                <img src="{% static 'images/makeupluxe.jpg' %}" class="d-block w-100" alt="Maquillage">
+                <div class="carousel-caption">
+                    <h3 class="fw-bold">💄 Collection Maquillage</h3>
+                    <p class="d-none d-md-block">Révélez votre beauté avec notre gamme de maquillage premium</p>
+                    <a href="{% url 'produits' %}?categorie=Maquillage" class="btn btn-light btn-sm">Découvrir</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#promoSlider" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#promoSlider" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<!-- Section Nos Marques Partenaires -->
+<section class="brands-section py-5">
+    <div class="container">
+        <div class="text-center mb-4 reveal">
+            <h2 class="mb-3" style="font-family: 'Playfair Display', serif; color: #d23f72;">Nos Marques Partenaires</h2>
+            <div class="separator mx-auto mb-4"></div>
+        </div>
+    </div>
+    
+    <div class="brands-slider-container reveal">
+        <div class="brands-slider">
+            <div class="brands-slide">
+                {% for marque in marques %}
+                <a href="{% url 'produits' %}?marque={{ marque.nom }}" class="brand-item">
+                    <div class="brand-logo-wrapper">
+                        {% if marque.logo %}
+                        <img src="{{ marque.logo.url }}" alt="{{ marque.nom }}" class="brand-logo">
+                        {% else %}
+                        <div class="brand-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="brand-name">{{ marque.nom }}</p>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <!-- Duplication des marques pour créer un défilement infini -->
+            <div class="brands-slide">
+                {% for marque in marques %}
+                <a href="{% url 'produits' %}?marque={{ marque.nom }}" class="brand-item">
+                    <div class="brand-logo-wrapper">
+                        {% if marque.logo %}
+                        <img src="{{ marque.logo.url }}" alt="{{ marque.nom }}" class="brand-logo">
+                        {% else %}
+                        <div class="brand-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <p class="brand-name">{{ marque.nom }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Section Nouveautés -->
+<section id="nouveautes" class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Nouveautés</h2>
+            <a href="{% url 'produits' %}" class="btn btn-outline-primary">Voir tout</a>
+        </div>
+        <div class="row g-4">
+            {% for produit in nouveautes %}
+            <div class="col-6 col-md-3">
+                <div class="card h-100 product-card {% if produit.stock <= 0 %}out-of-stock{% endif %}">
+                    {% if produit.stock <= 0 %}
+                        <div class="out-of-stock-overlay">
+                            <span class="badge bg-secondary">Rupture de stock</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if produit.image %}
+                    <img src="{{ produit.image.url }}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                    {% else %}
+                    <img src="{% static 'images/placeholder-product.jpg' %}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ produit.nom }}</h5>
+                        <p class="card-text small text-muted">{{ produit.description|truncatechars:60 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price fw-bold">{{ produit.prix }} DH</span>
+                            {% if produit.stock > 0 %}
+                                <button onclick="ajouterAuPanier('{{ produit.id }}')" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            {% else %}
+                                <button class="btn btn-sm btn-secondary" disabled>
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">Aucun nouveau produit disponible pour le moment.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Section Meilleures Ventes -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Meilleures Ventes</h2>
+            <a href="{% url 'produits' %}?bestseller=true" class="btn btn-outline-primary">Voir tout</a>
+        </div>
+        <div class="row g-4">
+            {% for produit in bestsellers %}
+            <div class="col-6 col-md-3">
+                <div class="card h-100 product-card {% if produit.stock <= 0 %}out-of-stock{% endif %}">
+                    <div class="bestseller-badge">
+                        <span class="badge bg-danger">Best-seller</span>
+                    </div>
+                    
+                    {% if produit.stock <= 0 %}
+                        <div class="out-of-stock-overlay">
+                            <span class="badge bg-secondary">Rupture de stock</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if produit.image %}
+                    <img src="{{ produit.image.url }}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                    {% else %}
+                    <img src="{% static 'images/placeholder-product.jpg' %}" class="card-img-top {% if produit.stock <= 0 %}grayscale{% endif %}" alt="{{ produit.nom }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ produit.nom }}</h5>
+                        <p class="card-text small text-muted">{{ produit.description|truncatechars:60 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price fw-bold">{{ produit.prix }} DH</span>
+                            {% if produit.stock > 0 %}
+                                <button onclick="ajouterAuPanier('{{ produit.id }}')" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            {% else %}
+                                <button class="btn btn-sm btn-secondary" disabled>
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">Aucun produit best-seller disponible pour le moment.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- Témoignages -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Ce que nos clients disent</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body text-center">
+                        <div class="testimonial-rating mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"J'utilise la crème anti-âge depuis un mois et ma peau est visiblement plus ferme et éclatante. Je recommande vivement!"</p>
+                        <div class="testimonial-author">
+                            <h6 class="mb-0">Sophie L.</h6>
+                            <small class="text-muted">Cliente depuis 2022</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body text-center">
+                        <div class="testimonial-rating mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Le sérum hydratant est devenu mon indispensable beauté. Livraison rapide et service client au top!"</p>
+                        <div class="testimonial-author">
+                            <h6 class="mb-0">Marie T.</h6>
+                            <small class="text-muted">Cliente depuis 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body text-center">
+                        <div class="testimonial-rating mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        </div>
+                        <p class="card-text">"Des produits de qualité exceptionnelle. Le rouge à lèvres longue tenue tient vraiment toute la journée!"</p>
+                        <div class="testimonial-author">
+                            <h6 class="mb-0">Camille D.</h6>
+                            <small class="text-muted">Cliente depuis 2021</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5 newsletter-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h3>Restez informé(e) de nos nouveautés</h3>
+                <p class="mb-4">Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande</p>
+                <form class="row g-3 justify-content-center">
+                    <div class="col-auto">
+                        <input type="email" class="form-control" placeholder="Votre adresse email">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript pour le compteur -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Définir la date de fin (7 jours à partir de maintenant)
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 7);
+        
+        function updateCountdown() {
+            const now = new Date();
+            const diff = endDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').textContent = "Offre terminée";
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdown').textContent = 
+                `${days}j ${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        // Mettre à jour le compteur toutes les secondes
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
+</script>
+<style>
+    /* Styles pour la section des marques avec défilement automatique */
+    .brands-section {
+        background-color: #fff9fb;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .separator {
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, transparent, #d23f72, transparent);
+    }
+    
+    .brands-slider-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .brands-slider-container::before,
+    .brands-slider-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 100px;
+        height: 100%;
+        z-index: 2;
+    }
+    
+    .brands-slider-container::before {
+        left: 0;
+        background: linear-gradient(to right, #fff9fb, transparent);
+    }
+    
+    .brands-slider-container::after {
+        right: 0;
+        background: linear-gradient(to left, #fff9fb, transparent);
+    }
+    
+    .brands-slider {
+        display: flex;
+        animation: scrollBrands 30s linear infinite;
+    }
+    
+    .brands-slider:hover {
+        animation-play-state: paused;
+    }
+    
+    .brands-slide {
+        display: flex;
+        flex-shrink: 0;
+    }
+    
+    .brand-item {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 30px;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+    }
+    
+    .brand-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .brand-logo-wrapper {
+        width: 120px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        padding: 10px;
+    }
+    
+    .brand-item:hover .brand-logo-wrapper {
+        box-shadow: 0 8px 25px rgba(210, 63, 114, 0.15);
+    }
+    
+    .brand-logo {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: grayscale(30%);
+        transition: filter 0.3s ease;
+    }
+    
+    .brand-item:hover .brand-logo {
+        filter: grayscale(0%);
+    }
+    
+    .brand-icon {
+        font-size: 40px;
+        color: #d23f72;
+    }
+    
+    .brand-name {
+        font-size: 14px;
+        color: #333;
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .brand-item:hover .brand-name {
+        color: #d23f72;
+    }
+    
+    @keyframes scrollBrands {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .brand-logo-wrapper {
+            width: 100px;
+            height: 70px;
+        }
+        
+        .brand-item {
+            padding: 10px 20px;
+        }
+    }
+</style>
+
+<!-- Contenu existant de la page d'accueil (suite) -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérifier s'il y a suffisamment de marques pour justifier le défilement
+        const brandsSlider = document.querySelector('.brands-slider');
+        const brandItems = document.querySelectorAll('.brands-slide:first-child .brand-item');
+        
+        // Si moins de 5 marques, ajuster l'animation
+        if (brandItems.length < 5) {
+            // Dupliquer les marques existantes pour remplir l'espace
+            const firstSlide = document.querySelector('.brands-slide:first-child');
+            const clonedItems = firstSlide.innerHTML;
+            
+            // Ajouter des copies supplémentaires
+            for (let i = 0; i < 3; i++) {
+                firstSlide.innerHTML += clonedItems;
+                document.querySelector('.brands-slide:last-child').innerHTML += clonedItems;
+            }
+            
+            // Ajuster la vitesse d'animation en fonction du nombre d'éléments
+            brandsSlider.style.animationDuration = (brandItems.length * 10) + 's';
+        }
+    });
+</script>
+{% endblock %}
+

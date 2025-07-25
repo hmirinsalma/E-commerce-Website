@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container auth-form-container">
+        <div class="form-header">
+            <h2>Inscription</h2>
+            <p>Rejoignez la communauté CosmoLux</p>
+        </div>
+        
+        {% if form.errors %}
+        <div class="form-alert form-alert-danger">
+            Veuillez corriger les erreurs ci-dessous.
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username">Nom d'utilisateur</label>
+                <input type="text" name="username" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" required>
+                {% if form.username.errors %}
+                <span class="form-error">{{ form.username.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                <input type="email" name="email" id="id_email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" required>
+                {% if form.email.errors %}
+                <span class="form-error">{{ form.email.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_telephone">Téléphone</label>
+                <input type="tel" name="telephone" id="id_telephone" class="form-control {% if form.telephone.errors %}is-invalid{% endif %}">
+                {% if form.telephone.errors %}
+                <span class="form-error">{{ form.telephone.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password1">Mot de passe</label>
+                <input type="password" name="password1" id="id_password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" required>
+                {% if form.password1.errors %}
+                <span class="form-error">{{ form.password1.errors.0 }}</span>
+                {% endif %}
+                <small class="text-muted">Votre mot de passe doit contenir au moins 8 caractères et ne peut pas être entièrement numérique.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password2">Confirmation du mot de passe</label>
+                <input type="password" name="password2" id="id_password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" required>
+                {% if form.password2.errors %}
+                <span class="form-error">{{ form.password2.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="form-btn form-btn-primary">S'inscrire</button>
+            </div>
+        </form>
+        
+        <div class="form-footer">
+            <p>Déjà un compte ? <a href="{% url 'connexion' %}" class="form-link">Se connecter</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="about-page">
+    <!-- Hero Banner -->
+    <div class="products-hero">
+        <div class="container">
+            <h1 class="text-center mb-4">À propos de CosmoLux</h1>
+            <p class="text-center mb-5">Découvrez notre histoire et notre engagement envers la beauté</p>
+        </div>
+    </div>
+
+    <!-- CSS pour les animations -->
+    <style>
+        /* Animation de fondu à l'entrée */
+        .fade-in-image {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        
+        .fade-in-image.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Animation au survol */
+        .hover-zoom {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+        
+        .hover-zoom:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        /* Animation de pulsation */
+        .pulse-animation {
+            animation: pulse 6s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Animation de rotation légère */
+        .tilt-animation {
+            animation: tilt 8s infinite alternate;
+            transform-origin: center center;
+        }
+        
+        @keyframes tilt {
+            0% {
+                transform: rotate(-1deg);
+            }
+            100% {
+                transform: rotate(1deg);
+            }
+        }
+    </style>
+
+    <div class="container py-5">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2 class="mb-4">Notre Histoire</h2>
+                <p>Fondée en 2020, CosmoLux est née d'une passion pour les cosmétiques de qualité et d'un désir de rendre les produits de luxe accessibles à tous.</p>
+                <p>Notre fondatrice, passionnée par les soins de la peau depuis son plus jeune âge, a créé CosmoLux avec une vision claire : proposer des produits cosmétiques haut de gamme qui respectent la peau et l'environnement.</p>
+                <p>Aujourd'hui, CosmoLux est devenue une référence dans le domaine des cosmétiques de luxe au Maroc, offrant une sélection rigoureuse des meilleures marques internationales.</p>
+            </div>
+            <div class="col-md-6">
+                <div class="image-container overflow-hidden rounded shadow">
+                    <img src="{% static 'images/hist.avif' %}" alt="Notre histoire" class="img-fluid fade-in-image hover-zoom pulse-animation">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5 flex-md-row-reverse">
+            <div class="col-md-6">
+                <h2 class="mb-4">Notre Mission</h2>
+                <p>Chez CosmoLux, notre mission est de vous aider à révéler votre beauté naturelle grâce à des produits cosmétiques de haute qualité.</p>
+                <p>Nous croyons que prendre soin de sa peau n'est pas seulement une question d'esthétique, mais aussi de bien-être et de confiance en soi.</p>
+                <p>C'est pourquoi nous sélectionnons avec soin chaque produit que nous proposons, en veillant à ce qu'il réponde à nos critères d'efficacité, de qualité et de respect de l'environnement.</p>
+            </div>
+            <div class="col-md-6">
+                <div class="image-container overflow-hidden rounded shadow">
+                    <img src="{% static 'images/wak.jpg' %}" alt="Notre mission" class="img-fluid fade-in-image hover-zoom tilt-animation">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2 class="mb-4">Nos Valeurs</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <h5><i class="fas fa-check-circle text-primary me-2"></i> Qualité</h5>
+                        <p>Nous ne proposons que des produits de haute qualité, testés et approuvés par nos experts.</p>
+                    </li>
+                    <li class="mb-3">
+                        <h5><i class="fas fa-check-circle text-primary me-2"></i> Authenticité</h5>
+                        <p>Tous nos produits sont 100% authentiques, provenant directement des marques ou de distributeurs officiels.</p>
+                    </li>
+                    <li class="mb-3">
+                        <h5><i class="fas fa-check-circle text-primary me-2"></i> Service client</h5>
+                        <p>Nous nous engageons à offrir un service client exceptionnel, à l'écoute de vos besoins.</p>
+                    </li>
+                    <li class="mb-3">
+                        <h5><i class="fas fa-check-circle text-primary me-2"></i> Respect de l'environnement</h5>
+                        <p>Nous privilégions les marques qui s'engagent pour la protection de l'environnement.</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="image-container overflow-hidden rounded shadow">
+                    <img src="{% static 'images/miki.jpg' %}" alt="Nos valeurs" class="img-fluid fade-in-image hover-zoom">
+                </div>
+            </div>
+        </div>
+
+       <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="mb-4 reveal">Notre Équipe</h2>
+            <p class="mb-5 reveal" style="animation-delay: 0.2s;">CosmoLux, c'est avant tout une équipe passionnée, dédiée à vous offrir la meilleure expérience possible.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm hover-grow reveal" style="animation-delay: 0.3s;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-circle fa-5x mb-3 text-primary"></i>
+                        <h5 class="card-title">Sarah Benali</h5>
+                        <p class="card-text text-muted">Fondatrice & Directrice</p>
+                        <p class="card-text">Passionnée de cosmétiques depuis plus de 15 ans, Sarah a créé CosmoLux pour partager sa passion.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm hover-grow reveal" style="animation-delay: 0.4s;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-circle fa-5x mb-3 text-primary"></i>
+                        <h5 class="card-title">Karim Tazi</h5>
+                        <p class="card-text text-muted">Responsable des Achats</p>
+                        <p class="card-text">Expert en cosmétiques de luxe, Karim sélectionne avec soin chaque produit de notre catalogue.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm hover-grow reveal" style="animation-delay: 0.5s;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-circle fa-5x mb-3 text-primary"></i>
+                        <h5 class="card-title">Leila Mansouri</h5>
+                        <p class="card-text text-muted">Conseillère Beauté</p>
+                        <p class="card-text">Esthéticienne de formation, Leila vous guide dans le choix des produits adaptés à vos besoins.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour l'animation de fondu à l'entrée -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fonction pour vérifier si un élément est visible dans la fenêtre
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+        
+        // Fonction pour faire apparaître les éléments quand ils sont visibles
+        function handleScrollAnimation() {
+            const fadeElements = document.querySelectorAll('.fade-in-image');
+            fadeElements.forEach(function(element) {
+                if (isElementInViewport(element)) {
+                    element.classList.add('appear');
+                }
+            });
+        }
+        
+        // Déclencher l'animation au chargement et au défilement
+        handleScrollAnimation();
+        window.addEventListener('scroll', handleScrollAnimation);
+        
+        // Ajouter la classe 'appear' aux éléments visibles au chargement
+        setTimeout(function() {
+            const fadeElements = document.querySelectorAll('.fade-in-image');
+            fadeElements.forEach(function(element) {
+                if (isElementInViewport(element)) {
+                    element.classList.add('appear');
+                }
+            });
+        }, 100);
+    });
+</script>
+{% endblock %}

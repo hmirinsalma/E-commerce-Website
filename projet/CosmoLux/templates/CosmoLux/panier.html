@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Votre Panier</h2>
+    
+    {% if panier_items %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in panier_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.produit.image %}
+                                                <img src="{{ item.produit.image.url }}" alt="{{ item.produit.nom }}" class="cart-item-img me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'images/placeholder-product.jpg' %}" alt="{{ item.produit.nom }}" class="cart-item-img me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.produit.nom }}</h6>
+                                                <small class="text-muted">{{ item.produit.marque }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.produit.prix }} DH</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary btn-decrease" data-produit-id="{{ item.produit.id }}" data-quantite="{{ item.quantite|add:'-1' }}">-</button>
+                                            <span class="mx-2">{{ item.quantite }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary btn-increase" data-produit-id="{{ item.produit.id }}" data-quantite="{{ item.quantite|add:'1' }}">+</button>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.total_article }} DH</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger btn-remove" data-produit-id="{{ item.produit.id }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{% url 'produits' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Continuer les achats
+                    </a>
+                    <div class="text-end">
+                        <h5>Total: <span class="text-primary">{{ total_panier }} DH</span></h5>
+                        <a href="{% url 'checkout' %}" class="btn btn-primary mt-2">
+                            <i class="fas fa-shopping-cart me-2"></i>Passer la commande
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">Votre panier est vide.</p>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'produits' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag me-2"></i>Découvrir nos produits
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Boutons pour diminuer la quantité
+        document.querySelectorAll('.btn-decrease').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const produitId = this.getAttribute('data-produit-id');
+                const quantite = parseInt(this.getAttribute('data-quantite'));
+                updateQuantity(produitId, quantite);
+            });
+        });
+        
+        // Boutons pour augmenter la quantité
+        document.querySelectorAll('.btn-increase').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const produitId = this.getAttribute('data-produit-id');
+                const quantite = parseInt(this.getAttribute('data-quantite'));
+                updateQuantity(produitId, quantite);
+            });
+        });
+        
+        // Boutons pour supprimer un article
+        document.querySelectorAll('.btn-remove').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const produitId = this.getAttribute('data-produit-id');
+                removeFromCart(produitId);
+            });
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateQuantity(produitId, newQuantity) {
+        if (newQuantity <= 0) {
+            removeFromCart(produitId);
+            return;
+        }
+        
+        // Envoyer la requête AJAX pour mettre à jour la quantité
+        fetch('/mise_a_jour_quantite/' + produitId + '/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'quantite=' + newQuantity
+        })
+        .then(response => {
+            if (response.ok) {
+                // Mettre à jour également le localStorage
+                const panier = JSON.parse(localStorage.getItem('panier') || '[]');
+                const produit = panier.find(item => item.produitId === produitId.toString());
+                if (produit) {
+                    produit.quantite = newQuantity;
+                    localStorage.setItem('panier', JSON.stringify(panier));
+                }
+                
+                // Recharger la page pour afficher les changements
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la mise à jour de la quantité:', error);
+        });
+    }
+
+    function removeFromCart(produitId) {
+        // Envoyer la requête AJAX pour supprimer l'article
+        fetch('/supprimer_article/' + produitId + '/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Mettre à jour également le localStorage
+                let panier = JSON.parse(localStorage.getItem('panier') || '[]');
+                panier = panier.filter(item => item.produitId !== produitId.toString());
+                localStorage.setItem('panier', JSON.stringify(panier));
+                
+                // Recharger la page pour afficher les changements
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la suppression de l\'article:', error);
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CosmoLux - Cosmétiques de Luxe</title>
+    
+    <!-- Inclusion de Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS personnalisé -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <!-- Add this in the <head> section of base.html, after your other CSS files -->
+<link rel="stylesheet" href="{% static 'css/animations.css' %}">
+
+<!-- Add this before the closing </body> tag, after your other JS files -->
+<script src="{% static 'js/animations.js' %}"></script>
+    
+    <style>
+        /* Styles pour le panier flottant */
+        .floating-cart {
+            position: fixed;
+            top: 80px;
+            right: -350px;
+            width: 350px;
+            max-height: 80vh;
+            background-color: white;
+            border-radius: 10px 0 0 10px;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .floating-cart.show {
+            right: 0;
+        }
+        
+        .floating-cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #f8f9fa;
+            border-radius: 10px 0 0 0;
+        }
+        
+        .floating-cart-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .floating-cart-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .floating-cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .floating-cart-footer {
+            padding: 15px;
+            border-top: 1px solid #f0f0f0;
+            background-color: #f8f9fa;
+            border-radius: 0 0 0 10px;
+        }
+        
+        .cart-toggle-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #d23f72;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 999;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .cart-toggle-btn:hover {
+            transform: scale(1.05);
+            background-color: #b8325f;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff4757;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .cart-count.has-items {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #d23f72;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1100;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f4c2c2;">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-gem me-2"></i>CosmoLux
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCosmoLux" aria-controls="navbarCosmoLux" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCosmoLux">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'home' %}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'produits' %}">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'about' %}">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'panier' %}">
+                            <i class="fas fa-shopping-cart me-1"></i>Panier
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>{{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profil' %}">Mon profil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'historique_commandes' %}">Mes commandes</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'deconnexion' %}">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'connexion' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Connexion
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'inscription' %}">
+                            <i class="fas fa-user-plus me-1"></i>Inscription
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Mini panier flottant -->
+    <div class="floating-cart shadow" id="floating-cart">
+        <div class="floating-cart-header">
+            <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i> Votre panier</h5>
+            <button type="button" class="btn-close" onclick="toggleFloatingCart()"></button>
+        </div>
+        <div class="floating-cart-body" id="floating-cart-items">
+            <!-- Les éléments du panier seront ajoutés ici par JavaScript -->
+        </div>
+        <div class="floating-cart-footer">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Total:</span>
+                <span id="floating-cart-total">0.00 DH</span>
+            </div>
+            <a href="{% url 'panier' %}" class="btn btn-primary w-100">Voir le panier</a>
+        </div>
+    </div>
+    <button class="cart-toggle-btn" onclick="toggleFloatingCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </button>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-3">CosmoLux</h5>
+                    <p>Des produits cosmétiques de luxe pour sublimer votre beauté naturelle.</p>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-3">Liens rapides</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-white">Accueil</a></li>
+                        <li><a href="{% url 'produits' %}" class="text-white">Produits</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white">À propos</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-3">Catégories</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'produits' %}?categorie=Soins%20Visage" class="text-white">Soins Visage</a></li>
+                        <li><a href="{% url 'produits' %}?categorie=Maquillage" class="text-white">Maquillage</a></li>
+                        <li><a href="{% url 'produits' %}?categorie=Parfums" class="text-white">Parfums</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-3">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Rue de la Beauté, CasaBlanca</li>
+                        <li><i class="fas fa-phone me-2"></i> +212661656477</li>
+                        <li><i class="fas fa-envelope me-2"></i> contact@cosmolux.ma</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; {% now "Y" %} CosmoLux. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript personnalisé -->
+    <script src="{% static 'js/panier.js' %}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Synchroniser le panier avec le serveur au chargement de la page
+            synchroniserPanierAvecServeur();
+            updateFloatingCart();
+            
+            // Mettre à jour le compteur du panier
+            updateCartCounter();
+        });
+
+        // Fonction pour synchroniser le panier avec le serveur
+        function synchroniserPanierAvecServeur() {
+            fetch('/api/panier-info/', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.articles) {
+                    // Remplacer le panier local par celui du serveur
+                    const panierServeur = data.articles.map(article => ({
+                        produitId: article.produit_id.toString(),
+                        quantite: article.quantite
+                    }));
+                    savePanierToLocalStorage(panierServeur);
+                    updateCartCounter();
+                    updateFloatingCart();
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la synchronisation du panier:', error);
+            });
+        }
+
+        // Fonction pour afficher/masquer le panier flottant
+        function toggleFloatingCart() {
+            const floatingCart = document.getElementById('floating-cart');
+            if (floatingCart) {
+                floatingCart.classList.toggle('show');
+                console.log('Toggle cart:', floatingCart.classList.contains('show'));
+            } else {
+                console.error('Élément panier flottant non trouvé');
+            }
+        }
+
+        // Fonction pour mettre à jour le panier flottant
+        function updateFloatingCart() {
+            const panier = loadPanierFromLocalStorage();
+            const cartCount = document.getElementById('cart-count');
+            const floatingCartItems = document.getElementById('floating-cart-items');
+            const floatingCartTotal = document.getElementById('floating-cart-total');
+            
+            if (!cartCount || !floatingCartItems || !floatingCartTotal) {
+                console.error('Éléments du panier flottant non trouvés');
+                return;
+            }
+            
+            // Mettre à jour le compteur
+            cartCount.textContent = panier.reduce((total, item) => total + item.quantite, 0);
+            
+            // Vider le contenu actuel
+            floatingCartItems.innerHTML = '';
+            
+            // Si le panier est vide
+            if (panier.length === 0) {
+                floatingCartItems.innerHTML = '<p class="text-center my-3">Votre panier est vide</p>';
+                floatingCartTotal.textContent = '0.00 DH';
+                return;
+            }
+            
+            // Récupérer les informations des produits depuis le serveur
+            fetch('/api/produits-panier/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ produits: panier.map(item => item.produitId) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let total = 0;
+                
+                // Pour chaque produit dans le panier
+                panier.forEach(item => {
+                    const produitInfo = data.find(p => p.id === parseInt(item.produitId));
+                    
+                    if (produitInfo) {
+                        // Créer l'élément HTML pour l'article
+                        const cartItem = document.createElement('div');
+                        cartItem.className = 'floating-cart-item';
+                        
+                        cartItem.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <img src="${produitInfo.image || '/static/images/placeholder-product.jpg'}" alt="${produitInfo.nom}" class="cart-item-img">
+                                <div class="ms-2 flex-grow-1">
+                                    <h6 class="mb-0">${produitInfo.nom}</h6>
+                                    <small class="text-muted">${produitInfo.marque}</small>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="updateQuantity('${item.produitId}', ${item.quantite - 1})">-</button>
+                                            <span class="mx-2">${item.quantite}</span>
+                                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="updateQuantity('${item.produitId}', ${item.quantite + 1})">+</button>
+                                        </div>
+                                        <div>
+                                            <span class="me-2">${(item.quantite * produitInfo.prix).toFixed(2)} DH</span>
+                                            <button class="btn btn-sm text-danger" onclick="supprimerDuPanier('${item.produitId}')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        floatingCartItems.appendChild(cartItem);
+                        
+                        // Calculer le total
+                        total += item.quantite * produitInfo.prix;
+                    }
+                });
+                
+                // Mettre à jour le total
+                floatingCartTotal.textContent = `${total.toFixed(2)} DH`;
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des informations des produits:', error);
+                
+                // Affichage simplifié en cas d'erreur
+                panier.forEach(item => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'floating-cart-item';
+                    
+                    cartItem.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <div class="ms-2 flex-grow-1">
+                                <h6 class="mb-0">Produit #${item.produitId}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small>Quantité: ${item.quantite}</small>
+                                    <button class="btn btn-sm text-danger" onclick="supprimerDuPanier('${item.produitId}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    floatingCartItems.appendChild(cartItem);
+                });
+            });
+        }
+
+        // Fonction pour mettre à jour la quantité
+        function updateQuantity(produitId, newQuantity) {
+            if (newQuantity <= 0) {
+                supprimerDuPanier(produitId);
+                return;
+            }
+            
+            // Mettre à jour côté serveur
+            fetch(`/mise_a_jour_quantite/${produitId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: `quantite=${newQuantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour côté client
+                    let panier = loadPanierFromLocalStorage();
+                    let produit = panier.find(item => item.produitId === produitId);
+                    
+                    if (produit) {
+                        produit.quantite = newQuantity;
+                        savePanierToLocalStorage(panier);
+                        updateFloatingCart();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour de la quantité:', error);
+            });
+        }
+
+        // Fonction pour supprimer un produit du panier
+        function supprimerDuPanier(produitId) {
+            // Supprimer côté serveur
+            fetch(`/supprimer_article/${produitId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Supprimer côté client
+                    supprimerProduitDuPanier(produitId);
+                    updateFloatingCart();
+                    showNotification('Produit retiré du panier');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression de l\'article:', error);
+            });
+        }
+
+        // Fonction pour afficher une notification
+        function showNotification(message) {
+            // Vérifier si une notification existe déjà
+            let notification = document.querySelector('.notification');
+            
+            // Si non, en créer une nouvelle
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.className = 'notification';
+                document.body.appendChild(notification);
+            }
+            
+            notification.textContent = message;
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+

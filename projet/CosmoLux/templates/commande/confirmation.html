@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container auth-form-container">
+        <div class="form-header">
+            <h2>Merci pour votre commande !</h2>
+            <p>Votre commande a été enregistrée avec succès</p>
+        </div>
+        
+        <div class="form-alert form-alert-success">
+            <p>Un email de confirmation vous a été envoyé à l'adresse fournie.</p>
+            <p>Vous pouvez suivre l'état de votre commande dans votre espace personnel.</p>
+        </div>
+        
+        <div class="text-center mt-4">
+            <img src="{% static 'images/order-confirmed.svg' %}" alt="Commande confirmée" class="img-fluid mb-4" style="max-width: 200px;">
+        </div>
+        
+        {% if mode_paiement == 'en_ligne' %}
+        <div class="form-alert form-alert-info">
+            <p><i class="fas fa-credit-card me-2"></i> <strong>Paiement en ligne</strong></p>
+            <p>Votre paiement a été traité avec succès. Merci pour votre achat !</p>
+        </div>
+        {% else %}
+        <div class="form-alert form-alert-info">
+            <p><i class="fas fa-money-bill-wave me-2"></i> <strong>Paiement à la livraison</strong></p>
+            <p>Vous avez choisi de payer à la livraison. Préparez le montant exact de {{ total }} DH pour le livreur.</p>
+        </div>
+        {% endif %}
+        
+        <div class="form-actions">
+            <a href="{% url 'historique_commandes' %}" class="form-btn form-btn-secondary">Voir mes commandes</a>
+            <a href="{% url 'produits' %}" class="form-btn form-btn-primary">Continuer mes achats</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

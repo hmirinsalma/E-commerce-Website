@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Mes commandes</h2>
+            <p>Historique de vos commandes</p>
+        </div>
+        
+        {% if commandes %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                    <tr>
+                        <td>#{{ commande.id }}</td>
+                        <td>{{ commande.date_commande|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge {% if commande.statut == 'livree' %}bg-success{% elif commande.statut == 'annulee' %}bg-danger{% elif commande.statut == 'expediee' %}bg-info{% else %}bg-warning{% endif %}">
+                                {{ commande.get_statut_display }}
+                            </span>
+                        </td>
+                        <td>{{ commande.total }} DH</td>
+                        <td>
+                            <a href="{% url 'details_commande' commande.id %}" class="btn btn-sm btn-outline-primary">Détails</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <img src="{% static 'images/empty-orders.svg' %}" alt="Aucune commande" class="img-fluid mb-4" style="max-width: 200px;">
+            <h5>Vous n'avez pas encore passé de commande</h5>
+            <p class="text-muted">Découvrez nos produits et passez votre première commande dès maintenant !</p>
+            <a href="{% url 'produits' %}" class="form-btn form-btn-primary mt-3">Découvrir nos produits</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

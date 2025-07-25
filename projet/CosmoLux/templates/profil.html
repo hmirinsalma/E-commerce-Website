@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Mon Profil</h2>
+            <p>Gérez vos informations personnelles</p>
+        </div>
+        
+        {% if messages %}
+        {% for message in messages %}
+        <div class="form-alert form-alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_first_name">Prénom</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_last_name">Nom</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:'' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_telephone">Téléphone</label>
+                <input type="tel" name="telephone" id="id_telephone" class="form-control" value="{{ form.telephone.value|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_photo_profil">Photo de profil</label>
+                {% if user.photo_profil %}
+                <div class="mb-2">
+                    <img src="{{ user.photo_profil.url }}" alt="Photo de profil" class="img-thumbnail" style="max-width: 150px;">
+                </div>
+                {% endif %}
+                <input type="file" name="photo_profil" id="id_photo_profil" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_langue">Langue préférée</label>
+                <select name="langue" id="id_langue" class="form-select">
+                    <option value="fr" {% if form.langue.value == 'fr' %}selected{% endif %}>Français</option>
+                    <option value="en" {% if form.langue.value == 'en' %}selected{% endif %}>Anglais</option>
+                    <option value="ar" {% if form.langue.value == 'ar' %}selected{% endif %}>Arabe</option>
+                </select>
+            </div>
+            
+            <div class="form-check">
+                <input type="checkbox" name="newsletter" id="id_newsletter" class="form-check-input" {% if form.newsletter.value %}checked{% endif %}>
+                <label for="id_newsletter" class="form-check-label">S'abonner à la newsletter</label>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'changer_mot_de_passe' %}" class="form-btn form-btn-secondary">Changer mon mot de passe</a>
+                <button type="submit" class="form-btn form-btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
